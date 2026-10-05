@@ -1577,7 +1577,239 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 5: THE ENCRYPTION VERDICT -->
+      
+      <!-- SECTION 5: MODEL DIRECTORY: FULL FORMS, DEFINITIONS & WHY THEY ARE NEEDED -->
+      <section class="section" id="models-directory">
+        <div class="section-kicker"><span>●</span> Architectural Core Directory</div>
+        <h2 class="section-title">Models Used: Full Forms, Mathematical Definitions &amp; Specific Needs</h2>
+        <p class="section-subtitle">
+          A comprehensive reference detailing every machine learning and mathematical model deployed in MetaLeadIQ, their formal definitions, and the operational problem each model solves.
+        </p>
+
+        <!-- Category Filters -->
+        <div class="viva-filter-bar" style="margin-bottom: 24px;">
+          <button class="viva-filter-chip active" onclick="filterModels('all', this)">All Models (7)</button>
+          <button class="viva-filter-chip" onclick="filterModels('ml', this)">Supervised ML &amp; Calibration</button>
+          <button class="viva-filter-chip" onclick="filterModels('decay', this)">Kinetics &amp; State</button>
+          <button class="viva-filter-chip" onclick="filterModels('safety', this)">Safety Bounds &amp; Queue</button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+          <!-- MODEL 1: XGBOOST -->
+          <div class="card card-accent-blue model-card" data-cat="ml">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 01 / SUPERVISED INFERENCE</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">XGBoost (eXtreme Gradient Boosting)</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(37,99,235,0.15); color: var(--blue);">FULL FORM: eXtreme Gradient Boosting</span>
+                <span class="badge" style="background: rgba(16,185,129,0.15); color: var(--emerald);">P99: 9.4 ms</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> An optimized, regularized Gradient Boosted Decision Tree (GBDT) framework. It builds an ensemble of shallow decision trees iteratively by minimizing a second-order Taylor expansion objective:
+              <div class="math-card">
+                \[ \mathcal{L}^{(t)} \approx \sum_{i=1}^n \left[ g_i f_t(\mathbf{x}_i) + \frac{1}{2} h_i f_t^2(\mathbf{x}_i) \right] + \gamma T + \frac{1}{2} \lambda \sum_{j=1}^T w_j^2, \quad w_j^* = -\frac{\sum g_i}{\sum h_i + \lambda} \]
+              </div>
+            </div>
+
+            <div class="explainer-box" style="border-left: 3px solid var(--blue);">
+              <div class="explainer-box-title" style="color: var(--blue);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Tabular Ad Data Superiority:</strong> Meta advertising leads consist of heterogeneous tabular features (placements, occupations, discrete visits, continuous dwell time). Benchmark studies (Grinsztajn et al., NeurIPS 2022) prove GBDTs consistently outperform Deep Neural Networks on tabular data.</li>
+                <li><strong>Non-Linear Synergies:</strong> Detects multi-variable interactions (e.g. <code>Instagram Reels</code> &times; <code>High Dwell Time &gt; 6m</code> &times; <code>Working Professional</code>) that linear models fail to detect.</li>
+                <li><strong>Ultra-Low Latency on CPU:</strong> Inference executes in <strong>9.4 milliseconds</strong> without requiring expensive GPU cloud clusters.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODEL 2: PLATT SCALING -->
+          <div class="card card-accent-green model-card" data-cat="ml">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 02 / PROBABILITY CALIBRATION</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">Platt Scaling (Sigmoid Probability Calibration)</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(16,185,129,0.15); color: var(--emerald);">FOUNDER: Dr. John Platt</span>
+                <span class="badge" style="background: rgba(37,99,235,0.15); color: var(--blue);">BRIER SCORE: 0.082</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> A post-processing probability calibration model that passes raw boosted margin outputs \(z = f(\mathbf{x})\) through a fitted logistic sigmoid transformation:
+              <div class="math-card">
+                \[ P(Y=1 \mid z) = \frac{1}{1 + \exp(A \cdot z + B)}, \quad S_{\text{base}} = \text{round}(100 \cdot P) \]
+              </div>
+              Parameters \(A\) and \(B\) are fitted via maximum likelihood on an independent validation holdout set.
+            </div>
+
+            <div class="explainer-box" style="border-left: 3px solid var(--emerald);">
+              <div class="explainer-box-title" style="color: var(--emerald);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Corrects Margin Distortion:</strong> Decision trees optimize margin separation rather than true probabilities, causing uncalibrated scores to cluster near 0 and 1.</li>
+                <li><strong>Real-World Empirical Meaning:</strong> Ensures an 80-point lead actually converts in <strong>8 out of 10 real-world sales opportunities</strong>, giving sales managers genuine revenue conversion probabilities rather than arbitrary rank numbers.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODEL 3: TREESHAP -->
+          <div class="card card-accent-purple model-card" data-cat="ml">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 03 / FEATURE ATTRIBUTION &amp; PRUNING</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">TreeSHAP (Tree-based SHapley Additive exPlanations)</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(99,102,241,0.15); color: var(--indigo);">FULL FORM: SHapley Additive exPlanations</span>
+                <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--amber);">COMPLEXITY: O(TLD²)</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> A polynomial-time algorithm based on cooperative game theory (developed by Nobel laureate Lloyd Shapley) computing exact marginal feature attributions \(\phi_i\) across all feature subsets \(S\):
+              <div class="math-card">
+                \[ \phi_i = \sum_{S \subseteq F \setminus \{i\}} \frac{|S|!(|F| - |S| - 1)!}{|F|!} \left[ f(S \cup \{i\}) - f(S) \right] \]
+              </div>
+            </div>
+
+            <div class="explainer-box" style="border-left: 3px solid var(--indigo);">
+              <div class="explainer-box-title" style="color: var(--indigo);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Eliminating Collinear Noise:</strong> Raw CRM datasets contain 37+ columns. TreeSHAP eliminated noisy and redundant features (collinear pairs where \(|\rho| &gt; 0.85\)), pruning the schema down to the top 14 most predictive attributes.</li>
+                <li><strong>Sales Rep Trust &amp; Explainability:</strong> Eliminates "black-box" resistance. Reps see exactly why a lead is scored Hot (e.g. <em>"+18 pts from 6.5 min dwell time on Reels"</em>).</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODEL 4: EXPONENTIAL DECAY -->
+          <div class="card card-accent-rose model-card" data-cat="decay">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 04 / DYNAMIC KINETICS</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">Radioactive Exponential Half-Life Decay Model (t½ = 24h)</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(244,63,94,0.15); color: var(--rose);">HALF-LIFE: 24 Hours</span>
+                <span class="badge" style="background: rgba(37,99,235,0.15); color: var(--blue);">λ = 0.02888 / hr</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> A continuous kinetic model governed by first-order radioactive differential decay \(\frac{dS}{dt} = -\lambda S\). For a 24-hour half-life (\(S(24) = S_0 / 2\)), the decay constant \(\lambda\) is derived as:
+              <div class="math-card">
+                \[ \lambda = \frac{\ln(2)}{24} \approx 0.02888\text{ hr}^{-1}, \quad S(t) = S_{\text{base}} \cdot e^{-\lambda \cdot \Delta t} = S_{\text{base}} \cdot 2^{-\frac{\Delta t}{24}} \]
+              </div>
+            </div>
+
+            <div class="explainer-box" style="border-left: 3px solid var(--rose);">
+              <div class="explainer-box-title" style="color: var(--rose);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Solves the 24-Hour Interest Evaporation:</strong> Empirical Harvard Business Review research shows prospect responsiveness drops by over 80% after 24 hours of non-contact.</li>
+                <li><strong>Replaces Static FIFO Flaws:</strong> Traditional CRMs leave lead scores unchanged for weeks. This mathematical model drops unattended leads down the call queue as hours elapse, instilling real-time operational urgency.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODEL 5: SCORE FREEZE -->
+          <div class="card card-accent-green model-card" data-cat="decay">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 05 / STATE TRANSITION</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">Atomic Contact Score-Freeze Model</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(16,185,129,0.15); color: var(--emerald);">STATUS: FROZEN 🔒</span>
+                <span class="badge" style="background: rgba(99,102,241,0.15); color: var(--indigo);">ATOMIC LOCK</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> A state transition function that permanently freezes elapsed decay time \(\Delta t\) at the exact timestamp \(t_{\text{contact}}\) when a sales outreach event occurs:
+              <div class="math-card">
+                \[ S(t) = \begin{cases} S_{\text{base}} \cdot e^{-\lambda \Delta t} & \text{if } \text{contacted} = \text{false} \\ S(t_{\text{contact}}) & \text{if } \text{contacted} = \text{true} \end{cases} \]
+              </div>
+            </div>
+
+            <div class="explainer-box" style="border-left: 3px solid var(--emerald);">
+              <div class="explainer-box-title" style="color: var(--emerald);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Rewards Fast Response:</strong> Reps who respond within the golden 5-minute window lock the lead at peak score (e.g. 89/100).</li>
+                <li><strong>Reflects Conversation Reality:</strong> Once a prospect is in active two-way conversation over WhatsApp or Instagram, decay physics no longer apply.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODEL 6: WALD CONFIDENCE INTERVAL -->
+          <div class="card card-accent-amber model-card" data-cat="safety">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 06 / UNCERTAINTY QUANTIFICATION</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">Wald Binomial Confidence Bounds</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(245,158,11,0.15); color: var(--amber);">CONFIDENCE: 95% CI</span>
+                <span class="badge" style="background: rgba(37,99,235,0.15); color: var(--blue);">COLD-START SAFETY</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> A frequentist statistical uncertainty model estimating precision based on sample interaction observations (total website visits \(n\)):
+              <div class="math-card">
+                \[ \text{SE} = \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}, \quad \text{CI}_{95\%} = \left[ \hat{p} \pm 1.96 \cdot \text{SE} \right] \]
+              </div>
+            </div>
+
+            <div class="explainer-box" style="border-left: 3px solid var(--amber);">
+              <div class="explainer-box-title" style="color: var(--amber);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Mitigates Cold-Start Risks:</strong> When a lead has only 1 visit (\(n=1\)), prediction variance is high.</li>
+                <li><strong>Protects Sales Reps:</strong> Flags low-visit leads with an <em>"Uncertain (Cold Start)"</em> badge, prompting reps to use gentle discovery emails rather than aggressive phone sales calls.</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- MODEL 7: LEXICOGRAPHICAL PRIORITY DISPATCH -->
+          <div class="card model-card" data-cat="safety">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+              <div>
+                <span style="font-size: 8pt; font-family: var(--mono); color: var(--text-muted); font-weight: 700;">MODEL 07 / DISPATCH &amp; ROUTING</span>
+                <h3 style="font-size: 14pt; font-weight: 800; color: var(--text-main);">Lexicographical Priority Queue Model</h3>
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <span class="badge" style="background: rgba(99,102,241,0.15); color: var(--indigo);">ORDER: STRICT PARTIAL</span>
+                <span class="badge" style="background: rgba(16,185,129,0.15); color: var(--emerald);">ZERO CHERRY-PICKING</span>
+              </div>
+            </div>
+
+            <div class="card-desc" style="margin-bottom: 12px;">
+              <strong>Mathematical Definition:</strong> A strict partial ordering rule that routes leads through three hierarchical priority keys:
+              <div class="math-card">
+                \[ A \succ B \iff \begin{cases} 
+                S_A(t) > S_B(t) \\
+                \text{or } S_A = S_B \land \text{uncontacted}_A > \text{uncontacted}_B \\
+                \text{or } S_A = S_B \land \text{uncontacted} \land \Delta t_A > \Delta t_B 
+                \end{cases} \]
+              </div>
+            </div>
+
+            <div class="explainer-box">
+              <div class="explainer-box-title" style="color: var(--text-main);">🎯 The Specific Need in MetaLeadIQ:</div>
+              <ul style="padding-left: 18px; font-size: 8.5pt; color: var(--text-secondary); line-height: 1.65; margin-top: 4px;">
+                <li><strong>Eliminates Rep Cherry-Picking:</strong> Sales reps cannot bypass hard leads; the queue enforces mathematical optimization.</li>
+                <li><strong>Deterministic Fairness:</strong> Guarantees hot uncontacted leads always route to the top of the queue before warm or already-contacted leads.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <div class="divider"></div>
+      <!-- SECTION 6: THE ENCRYPTION VERDICT -->
       <section class="section" id="encryption-verdict">
         <div class="section-kicker"><span>●</span> Security Architecture</div>
         <h2 class="section-title">The WhatsApp Encryption Verdict: Zero Bottleneck</h2>
@@ -1616,7 +1848,7 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 6: INTERACTIVE EXPLAINABLE SCREENSHOT SHOWCASE -->
+      <!-- SECTION 7: INTERACTIVE EXPLAINABLE SCREENSHOT SHOWCASE -->
       <section class="section" id="ui-showcase">
         <div class="section-kicker"><span>●</span> Explainable UI Architecture</div>
         <h2 class="section-title">Interactive Project Visual Showcase</h2>
@@ -1705,7 +1937,7 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 7: INTERACTIVE ML PIPELINE WALKTHROUGH -->
+      <!-- SECTION 8: INTERACTIVE ML PIPELINE WALKTHROUGH -->
       <section class="section" id="pipeline-walkthrough">
         <div class="section-kicker"><span>●</span> Step-by-Step Simulation</div>
         <h2 class="section-title">Interactive 4-Stage Lead Lifecycle</h2>
@@ -1754,7 +1986,7 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 8: INTERACTIVE SIMULATOR WITH SCORE FREEZE -->
+      <!-- SECTION 9: INTERACTIVE SIMULATOR WITH SCORE FREEZE -->
       <section class="section" id="simulator">
         <div class="section-kicker"><span>●</span> Live Demonstration</div>
         <h2 class="section-title">Interactive Scoring Engine &amp; Contact-Freeze Demo</h2>
@@ -1828,7 +2060,7 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 9: EMPIRICAL BENCHMARKS -->
+      <!-- SECTION 10: EMPIRICAL BENCHMARKS -->
       <section class="section" id="benchmarks">
         <div class="section-kicker"><span>●</span> Validation &amp; Metrics</div>
         <h2 class="section-title">Empirical Benchmark Comparisons</h2>
@@ -1892,7 +2124,7 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 10: TECHNICAL VIVA DEFENSES -->
+      <!-- SECTION 11: TECHNICAL VIVA DEFENSES -->
       <section class="section" id="viva-defenses">
         <div class="section-kicker"><span>●</span> Evaluation Defense</div>
         <h2 class="section-title">Technical Examination &amp; Viva Defenses</h2>
@@ -1978,7 +2210,7 @@
 
       <div class="divider"></div>
 
-      <!-- SECTION 11: CONCLUSION -->
+      <!-- SECTION 12: CONCLUSION -->
       <section class="section" id="conclusion">
         <div class="section-kicker"><span>●</span> Summary &amp; Wrap-Up</div>
         <h2 class="section-title">Summary &amp; Project Wrap-Up</h2>
@@ -2064,15 +2296,15 @@
         </p>
 
         <div style="display: flex; gap: 8px; margin-bottom: 14px;">
-          <input type="text" id="cloudUrlInput" placeholder="https://metaleadiq-demo.ngrok-free.app" style="flex: 1; background: var(--surface-elevated); border: 1px solid var(--border-card); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-size: 8.5pt; font-family: var(--mono);" oninput="onCustomUrlChange()">
+          <input type="text" id="cloudUrlInput" placeholder="https://configure-ribcage-immersion.ngrok-free.dev" value="https://configure-ribcage-immersion.ngrok-free.dev" style="flex: 1; background: var(--surface-elevated); border: 1px solid var(--border-card); color: var(--text-main); padding: 8px 12px; border-radius: 8px; font-size: 8.5pt; font-family: var(--mono);" oninput="onCustomUrlChange()">
           <button class="nav-btn" onclick="saveCustomUrl()">Save</button>
         </div>
 
         <div class="qr-preview-box">
-          <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=http://localhost:5173" alt="QR Code" style="width: 170px; height: 170px; display: block;">
+          <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&amp;data=https://configure-ribcage-immersion.ngrok-free.dev" alt="QR Code" style="width: 170px; height: 170px; display: block;">
         </div>
 
-        <a id="cloudLaunchBtn" href="http://localhost:5173" target="_blank" class="sim-freeze-btn" style="text-decoration: none; background: linear-gradient(135deg, var(--blue), var(--indigo));">
+        <a id="cloudLaunchBtn" href="https://configure-ribcage-immersion.ngrok-free.dev" target="_blank" class="sim-freeze-btn" style="text-decoration: none; background: linear-gradient(135deg, var(--blue), var(--indigo));">
           <span>📱 Open Cloud / Mobile Link</span>
         </a>
       </div>
@@ -2522,6 +2754,23 @@
         text.textContent = 'Simulate Agent Reply (Freeze Score)';
       }
       updateSim();
+    }
+
+    
+    /* ─── MODELS DIRECTORY FILTER ─── */
+    function filterModels(category, btn) {
+      const chips = btn.parentElement.querySelectorAll('.viva-filter-chip');
+      chips.forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('.model-card');
+      cards.forEach(card => {
+        if (category === 'all' || card.getAttribute('data-cat') === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
     }
 
     /* ─── VIVA FILTER ─── */
